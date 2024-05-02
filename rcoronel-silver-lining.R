@@ -82,6 +82,6 @@ ggplot() +
   geom_line(data = dfprior_mean, aes(x = as.Date(paste(year, month, "01", sep = "-")), 
                                      y = mean, color = "Pre-2000")) +
   geom_line(data = dfall_mean, aes(x = as.Date(paste(year, month, "01", sep = "-")), 
-                                     y = mean, color = "All")) +
+                                     y = mean, color = "Overall")) +
   labs(x = "Year", y = "Mean ZHVI Value", color = "Year Opened") +
   ggtitle("Mean ZHVI Value by Month for Each Year (2 Bedroom Units)")
