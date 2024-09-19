@@ -30,6 +30,18 @@ Clean data here.
 ```{r}
 library("tidyverse")
 library("glue")
+
+df <- read.csv("Zhvi.csv")
+
+```
+
+```{r}
+df <- df %>% filter(df$State == "MD" | df$State == "VA" | df$State == "DC")
+df2 <- df %>% select(-StateName,-RegionType,-SizeRank,-RegionID)
+```
+
+```{r}
+write.csv(df2,file = "Zhvi_DMV2.csv")
 ```
 
 ## Preliminary Results
