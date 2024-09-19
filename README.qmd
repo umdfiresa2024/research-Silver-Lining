@@ -1,3 +1,74 @@
+
+---
+title: "Preliminary Research Results"
+author: "2024 FIRE198 Sustainability Analytics"
+format: gfm
+editor: visual
+---
+
+## Team Members
+
+Write names of team members here.
+
+Raphael Coronel, Taylor Woods, Brian Huang, Joseph Tang
+
+## Research Question
+
+Write research question here.
+
+How does the opening/announcement of the Silver Line affect housing costs?
+
+## Background
+
+Write research relevance and literature review here.
+
+## Data
+
+Explain data source here.
+
+Clean data here.
+
+```{r}
+library("tidyverse")
+library("glue")
+```
+
+## Preliminary Results
+
+Use your final dataset to visualize how the treatment variable impacts the outcome variable here.
+
+First I add a column saying how many bathrooms the datapoint has has. Only code for br5 is shown but imagine the samw thing happens fo rthe other 4.
+
+```{r}
+br5$BedroomCnt <- rep(5,nrow(br5))
+```
+
+creating one big data frame and double checking that nothing got nipped off and moving bedroomcnt to the front since its kinda imortant
+
+```{r}
+brAll <- rbind(br1,br2,br3,br4,br5)
+sum(nrow(br1),nrow(br2),nrow(br3),nrow(br4),nrow(br5))
+br <- brAll %>% relocate(BedroomCnt)
+```
+
+Some additional processing to get rid of horrendous date data and replace with good year + month data 😌
+
+```{r}
+br2 <- br  %>% pivot_longer(cols = `2000-01-31`:`2024-07-31`,names_to = "Date", values_to = "Price")
+br3 <- br2 %>% mutate(Year = year(Date), Month = month(Date))
+br3$Date <- NULL
+```
+
+savin it for now
+
+```{r}
+write.csv(br3,file = "Zhvi.csv")
+```
+
+due to git file size constraints, the file is saved at:
+
+### G:\Shared drives\\2024 FIRE-SA\DATA\Silver Lining
+=======
 ---
 title: "Research Question"
 format: gfm
@@ -119,3 +190,4 @@ Step 13: If your team has a complete dataframe that includes both the treated an
 
 
 Step 13: If your team has a complete dataframe that includes both the treated and outcome variable, you are done with the assignment. If not, make a research plan in Notion to collect data on the outcome and treatment variable and combine it into one dataframe.
+
