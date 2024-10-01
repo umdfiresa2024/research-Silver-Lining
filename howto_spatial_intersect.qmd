@@ -14,22 +14,17 @@ library("tidyverse")
 Upload light rail shapefiles into the environment
 
 ```{r}
+lr <- vect("G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/zipcodes/tl_2020_us_zcta520.shp")
+```
+
+```{r}
+lrdf <- as.data.frame(lr)
+```
+
+```{r}
 #Charlotte
-lr<-vect("Shapefiles/LYNX_Blue_Line_Route/LYNX_Blue_Line_Route.shp")
+lr<-vect("G:\Shared drives\2024 FIRE-SA\DATA\Silver Lining\Metro_Lines_Regional\Metro_Lines_Regional.shp")
 charlotte_lr<-aggregate(lr, dissolve=TRUE)
-
-#Houston
-lr <- vect("Shapefiles/National_Transit_Map_Routes/National_Transit_Map_Routes.shp")
-lr2 <- subset(lr, lr$route_long == "METRORAIL RED LINE")
-houston_lr<-aggregate(lr2, dissolve=TRUE)
-
-#Twin Cities
-lr <- vect("Shapefiles/National_Transit_Map_Routes/National_Transit_Map_Routes.shp")
-lr2 <- subset(
-  lr, 
-  lr$route_url == "https://www.metrotransit.org/route/blue" | 
-    lr$route_url == "https://www.metrotransit.org/route/green")
-twin_cities_lr<-aggregate(lr2, dissolve=TRUE)
 
 #Phoenix-Mesa
 lr <- vect("Shapefiles/Valley_Metro_Light_Rail/LightRailLine.shp")
