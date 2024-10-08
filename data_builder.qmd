@@ -4,15 +4,219 @@ library("tidyverse")
 library("sf")
 ```
 
+# scroll down to reformatting for actual code
+
 ```{r}
 origin <- "G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/"
 
-lines <- vect(paste(origin,"Metro_Lines_Regional/Metro_Lines_Regional.shp"))
+lines <- vect(paste(origin,"Metro_Lines_Regional/Metro_Lines_Regional.shp",sep = ''))
 silver_line <- lines[lines$NAME == "silver"]
 
 # Filter for specific states (assuming there's a 'state' column)
-plot(silver_line, main = "DC Metro Silver Line")
-md_zip <- vect("~/Downloads/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit (1)/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit.shp")
-dc_zip <- vect("~/Downloads/DC/Zip_Codes.shp")
-va_zip <- vect("~/Downloads/VA_Zip_Codes_8831355910966913844/VA_Zip_Codes.shp")
+# plot(silver_line, main = "DC Metro Silver Line")
+md_zip <- vect(paste(origin,"MD/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit.shp",sep = ''))
+dc_zip <- vect(paste(origin,"DC/Zip_Codes.shp",sep = ''))
+va_zip <- vect(paste(origin,"VA/VA_Zip_Codes.shp",sep = ''))
+```
+
+```{r}
+plot(md_zip)
+plot(dc_zip)
+plot(va_zip)
+```
+
+```{r}
+origin <- "G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/"
+
+lines <- st_read(paste(origin,"Metro_Lines_Regional/Metro_Lines_Regional.shp",sep = ''))
+silver_line <- lines[lines$NAME == "silver"]
+
+# Filter for specific states (assuming there's a 'state' column)
+# plot(silver_line, main = "DC Metro Silver Line")
+md_zip <- st_read(paste(origin,"MD/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit.shp",sep = ''))
+dc_zip <- st_read(paste(origin,"DC/Zip_Codes.shp",sep = ''))
+va_zip <- st_read(paste(origin,"VA/VA_Zip_Codes.shp",sep = ''))
+```
+
+```{r}
+md_cent <- centroids(md_zip)
+dc_cent <- centroids(dc_zip)
+va_cent <- centroids(va_zip)
+
+md_cent <- geom(md_cent)[, c("x", "y")]
+dc_cent <- geom(dc_cent)[, c("x", "y")]
+va_cent <- geom(va_cent)[, c("x", "y")]
+
+md_zip$cent_x <- md_cent[,1]
+md_zip$cent_y <- md_cent[,2]
+
+dc_zip$cent_x <- dc_cent[,1]
+dc_zip$cent_y <- dc_cent[,2]
+
+va_zip$cent_x <- va_cent[,1]
+va_zip$cent_y <- va_cent[,2]
+```
+
+```{r}
+lr_buff<-buffer(phoenix_mesa_lr_project, width=5000) # 5km idk
+```
+
+```{r}
+md_cent <- st_centroid(md_zip)
+dc_cent <- st_centroid(dc_zip)
+va_cent <- st_centroid(va_zip)
+```
+
+```{r}
+md_zip$cent_x <- st_coordinates(md_cent)[,1]
+md_zip$cent_y <- st_coordinates(md_cent)[,2]
+
+dc_zip$cent_x <- st_coordinates(dc_cent)[,1]
+dc_zip$cent_y <- st_coordinates(dc_cent)[,2]
+
+va_zip$cent_x <- st_coordinates(va_cent)[,1]
+va_zip$cent_y <- st_coordinates(va_cent)[,2]
+```
+
+```{r}
+silver_buff <-buffer(silver_line, width=5000) #5km
+```
+
+```{r}
+plot(silver_buff, col= "blue")
+plot(md_zip,add = TRUE)
+plot(dc_zip,add = TRUE)
+plot(va_zip,add = TRUE)
+```
+
+```{r}
+md_cent_vect <- vect(md_cent,crs = crs(silver_buff))
+md_cent_vect <- vect(md_cent,crs = crs(silver_buff))
+
+md_cent_intersect <-terra::intersect(silver_buff, md_cent)
+
+md_buff_intersect_df<-as.data.frame(md_cent_intersect) %>%
+  mutate(status="Inside 5km Buffer")
+print(md_buff_intersect_df$PUMACE10)
+```
+
+## reformatting with using sf package instead of sf for reals
+
+```{r}
+origin <- "G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/"
+
+lines <- st_read(paste(origin,"Metro_Lines_Regional/Metro_Lines_Regional.shp",sep = ''))
+silver_line <- lines[lines$NAME == "silver"]
+
+# Filter for specific states (assuming there's a 'state' column)
+# plot(silver_line, main = "DC Metro Silver Line")
+md_zip <- st_read(paste(origin,"MD/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit.shp",sep = ''))
+dc_zip <- st_read(paste(origin,"DC/Zip_Codes.shp",sep = ''))
+va_zip <- st_read(paste(origin,"VA/VA_Zip_Codes.shp",sep = ''))
+```
+
+```{r}
+#finding centroids
+md_cent <- st_centroid(md_zip)
+dc_cent <- st_centroid(dc_zip)
+va_cent <- st_centroid(va_zip)
+```
+
+```{r}
+# dont need to run this
+md_zip$cent_x <- st_coordinates(md_cent)[,1]
+md_zip$cent_y <- st_coordinates(md_cent)[,2]
+
+dc_zip$cent_x <- st_coordinates(dc_cent)[,1]
+dc_zip$cent_y <- st_coordinates(dc_cent)[,2]
+
+va_zip$cent_x <- st_coordinates(va_cent)[,1]
+va_zip$cent_y <- st_coordinates(va_cent)[,2]
+```
+
+```{r}
+silver_buff <-st_buffer(silver_line, dist=5000) #5km
+```
+
+```{r}
+plot(silver_buff, col= "blue")
+plot(md_zip,add = TRUE)
+plot(dc_zip,add = TRUE)
+plot(va_zip,add = TRUE)
+```
+
+```{r}
+# finding all places that intersect on the centroid shapefile 
+md_itst <- st_intersection(silver_buff, md_cent)
+dc_itst <- st_intersection(silver_buff, dc_cent)
+va_itst <- st_intersection(silver_buff, va_cent)
+```
+
+```{r}
+# filtering out repeat values and extra rows
+md_itst_c <- md_itst %>% distinct() %>% select(-SE_ANNO_CA, -SHAPELEN)
+dc_itst_c <- dc_itst %>% distinct() %>% select(-SE_ANNO_CA, -SHAPELEN)
+va_itst_c <- va_itst %>% distinct() %>% select(-SE_ANNO_CA, -SHAPELEN)
+```
+
+```{r}
+# tried joinint the two, didnt work. dont run!!!! just use ist_c . leave data as a centroid.
+md_zip_rad <- st_join(md_itst_c , md_zip, by = "ZIPECODE1")
+
+shapefile1 <- md_itst_c
+shapefile1$geometry <- md_zip$geometry
+```
+
+```{r}
+#preparing for things to be combined
+
+md_complete <- md_itst_c %>% select(ZIPCODE1, ZIPNAME, geometry)
+dc_complete <- dc_itst_c %>% select(ZIPCODE, NAME , geometry)
+va_complete <- va_itst_c %>% select(ZIP_CODE, PO_NAME, geometry)
+```
+
+```{r}
+md_complete <- md_complete %>%  rename(ZIP_CODE = ZIPCODE1) %>%  rename(ZIPNAME = ZIPNAME) 
+dc_complete <- dc_complete %>%  rename(ZIP_CODE = ZIPCODE) %>%  rename(ZIPNAME = NAME) 
+va_complete <- va_complete %>%  rename(ZIP_CODE = ZIP_CODE) %>%  rename(ZIPNAME = PO_NAME) 
+```
+
+```{r}
+zip_codes0 <- rbind(md_complete,dc_complete)
+zip_codes <- rbind(zip_codes0,va_complete)
+```
+
+## adding in discrimination for old and new silver metro
+
+```{r}
+zip_codes$OLD_SILVER <- 0
+zip_codes$NEW_SILVER <- 0
+
+```
+
+getting both old and all stations and finding new stations
+
+```{r}
+old_stations <- overlapping_zipcodes$ZIPCODE
+all_stations <- silver_zips$ZIPCODE
+
+# ON as in old new
+zip_codes_ON <- zip_codes %>% 
+  mutate(OLD_SILVER = if_else(ZIP_CODE %in% old_stations, 1, 0 ))
+
+zip_codes_ON <- zip_codes_ON %>% mutate(NEW_SILVER = if_else(ZIP_CODE %in% all_stations, 1, 0))
+
+zip_codes_ON <- zip_codes_ON %>% mutate(NEW_SILVER = NEW_SILVER - OLD_SILVER)
+
+```
+
+# writing out final data :)
+
+```{r}
+df_data <- as.data.frame(zip_codes)
+```
+
+```{r}
+st_write(zip_codes, "zip_codes.shp")
+write.csv(df_data, "zip_codes.csv", row.names = FALSE)
 ```
