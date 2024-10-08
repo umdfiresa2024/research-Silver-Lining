@@ -9,9 +9,13 @@ editor: visual
 
 Write names of team members here.
 
+Raphael Coronel, Taylor Woods, Brian Huang, Joseph Tang
+
 ## Research Question
 
 Write research question here.
+
+How does the opening/announcement of the Silver Line affect housing costs?
 
 ## Background
 
@@ -24,13 +28,193 @@ Explain data source here.
 Clean data here.
 
 ```{r}
+#library("tidyverse")
+#library("glue")
 
+#df <- read.csv("Zhvi.csv")
+
+```
+
+```{r}
+#df <- df %>% filter(df$State == "MD" | df$State == "VA" | df$State == "DC")
+#df2 <- df %>% select(-StateName,-RegionType,-SizeRank,-RegionID)
+```
+
+```{r}
+#write.csv(df2,file = "Zhvi_DMV2.csv")
 ```
 
 ## Preliminary Results
 
 Use your final dataset to visualize how the treatment variable impacts the outcome variable here.
 
+First I add a column saying how many bathrooms the datapoint has has. Only code for br5 is shown but imagine the samw thing happens fo rthe other 4.
+
 ```{r}
+#br5$BedroomCnt <- rep(5,nrow(br5))
+```
+
+creating one big data frame and double checking that nothing got nipped off and moving bedroomcnt to the front since its kinda imortant
+
+```{r}
+#brAll <- rbind(br1,br2,br3,br4,br5)
+#sum(nrow(br1),nrow(br2),nrow(br3),nrow(br4),nrow(br5))
+#br <- brAll %>% relocate(BedroomCnt)
+```
+
+Some additional processing to get rid of horrendous date data and replace with good year + month data 😌
+
+```{r}
+#br2 <- br  %>% pivot_longer(cols = `2000-01-31`:`2024-07-31`,names_to = "Date", values_to = "Price")
+#br3 <- br2 %>% mutate(Year = year(Date), Month = month(Date))
+#br3$Date <- NULL
+```
+
+savin it for now
+
+```{r}
+#write.csv(br3,file = "Zhvi.csv")
+```
+
+due to git file size constraints, the file is saved at:
+
+### G:\Shared drives\\2024 FIRE-SA\DATA\Silver Lining
+
+---
+title: "Research Question"
+format: gfm
+editor: visual
+---
+
+Step 1. Install necessary packages.
+
+```{r}
+#install.packages("tidyverse")
+#install.packages("kableExtra")
+```
+
+Step 2. Declare that you will use these packages in this session.
+
+```{r}
+library("tidyverse")
+library("kableExtra")
+```
+
+Step 3. Upload the dataframe that you have created in Spring 2024 into the repository.
+
+Step 4. Open the dataframe into the RStudio Environment.
+
+```{r}
+df<-read.csv("dfdmv_with_treatment.csv")
+```
+
+Step 5. Use the **head** and **kable** function showcase the first 10 rows of the dataframe to the reader.
+
+```{r}
+# kable(head(df))
+head(df)
+```
+
+## Question 1: What is the frequency of this data frame?
+
+Answer: once a month
+
+## Question 2: What is the cross-sectional (geographical) unit of this data frame?
+
+Answer: zip code
+
+Step 6. Use the **names** function to display all the variables (column) in the dataframe.
+
+```{r}
+names(df)
 
 ```
+
+## Question 3: Which column represents the treatment variable of interest?
+
+Answer: station_open
+
+## Question 4: Which column represents the outcome variable of interest?
+
+Answer: Price (i wuv munni)
+
+Step 7: Create a boxplot to visualize the distribution of the outcome variable under treatment and no treatment.
+
+```{r}
+#! eval: false
+ggplot(df, aes(x=Price)) +
+  geom_histogram() +
+  facet_wrap(~station_open) 
+```
+
+Step 8: Fit a regression model $y=\beta_0 + \beta_1 x + \epsilon$ where $y$ is the outcome variable and $x$ is the treatment variable. Use the **summary** function to display the results.
+
+```{r}
+model1<-lm(Price ~ station_open, data=df)
+
+summary(model1)
+```
+
+## Question 5: What is the predicted value of the outcome variable when treatment=0?
+
+Answer: 537857
+
+## Question 6: What is predicted value of the outcome variable when treatment=1?
+
+Answer:537857 + 27241 = 565098
+
+basically + 30k
+
+## Question 7: What is the equation that describes the linear regression above? Please include an explanation of the variables and subscripts.
+
+Answer:
+
+$$
+Price = \beta_0 + \beta_1 station_open
+$$
+
+I love latex 😌 (it refuses to show up)
+
+## Question 8: What fixed effects can be included in the regression? What does each fixed effects control for? Please include a new equation that incorporates the fixed effects.
+
+Answer: Month, Year, CountyName, BedroomCnt, RegionName (zip code)
+
+## Question 9: What is the impact of the treatment effect once fixed effects are included?
+
+Answer:
+
+```{r}
+model2 <-lm(Price ~ station_open + as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt) + as.factor(RegionName ), data = df)
+```
+
+```{r}
+summary(model2)
+```
+
+# Questions for Week 5
+
+## Question 10: In a difference-in-differences (DiD) model, what is the treatment GROUP?
+
+Answer:
+
+## Question 11: In a DiD model, what are the control groups?
+
+Answer:
+
+## Question 12: What is the DiD regression equation that will answer your research question?
+
+## Question 13: Run your DiD regressions below. What are the results of the DiD regression?
+
+## Question 14: What are the next steps of your research?
+
+Step 9: Change the document format to gfm
+
+Step 10: Save this document as README.qmd
+
+Step 11: Render the document. README.md file should be created after this process.
+
+Step 12: Push the document back to GitHub and observe your beautiful document in your repository!
+
+Step 13: If your team has a complete dataframe that includes both the treated and outcome variable, you are done with the assignment. If not, make a research plan in Notion to collect data on the outcome and treatment variable and combine it into one dataframe.
+
+Step 13: If your team has a complete dataframe that includes both the treated and outcome variable, you are done with the assignment. If not, make a research plan in Notion to collect data on the outcome and treatment variable and combine it into one dataframe.

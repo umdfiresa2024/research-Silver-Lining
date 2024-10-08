@@ -1,0 +1,95 @@
+---
+title: "How to Work with Spatial Lines and Polygons"
+format: html
+editor: visual
+---
+
+Install and declare required package
+
+```{r}
+library("terra")
+library("tidyverse")
+```
+
+Upload light rail shapefiles into the environment
+
+```{r}
+lr <- vect("G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/zipcodes/tl_2020_us_zcta520.shp")
+```
+
+```{r}
+lrdf <- as.data.frame(lr)
+```
+
+```{r}
+#Charlotte
+lr<-vect("G:\Shared drives\2024 FIRE-SA\DATA\Silver Lining\Metro_Lines_Regional\Metro_Lines_Regional.shp")
+charlotte_lr<-aggregate(lr, dissolve=TRUE)
+
+#Phoenix-Mesa
+lr <- vect("Shapefiles/Valley_Metro_Light_Rail/LightRailLine.shp")
+lr2 <- subset(lr, lr$SYMBOLOGY=="METRO")
+phoenix_mesa_lr<-aggregate(lr2, dissolve=TRUE)
+
+```
+
+## Get PUMA - Example for Phoenix-Mesa, AZ
+
+Upload a PUMA boundary into the Environment
+
+```{r}
+puma_az<-vect("Shapefiles/tl_2010_AZ_puma10/tl_2010_04_puma10.shp")
+```
+
+Transform the coordinate reference system of the light rail route to be the same as the PUMA boundaries
+
+```{r}
+phoenix_mesa_lr_project<-project(phoenix_mesa_lr, crs(puma_az))
+```
+
+Map the light rail routes and PUMA boundaries together
+
+```{r}
+
+plot(phoenix_mesa_lr_project, col="blue") #the first item determines the boundary
+plot(puma_az, add=TRUE)
+
+```
+
+Find which PUMAs the light rail goes through
+
+```{r}
+lr_intersect<-terra::intersect(phoenix_mesa_lr_project, puma_az)
+
+lr_intersect_df<-as.data.frame(lr_intersect) %>%
+  mutate(status="LR Overlaps")
+
+print(lr_intersect_df$PUMACE10)
+```
+
+Find which PUMAs are around the 1 km buffer of the light rail
+
+```{r}
+#make 1 km light rail buffer
+lr_buff<-buffer(phoenix_mesa_lr_project, width=1000)
+
+lr_buff_intersect<-terra::intersect(lr_buff, puma_az)
+
+lr_buff_intersect_df<-as.data.frame(lr_buff_intersect) %>%
+  mutate(status="Inside 1km Buffer")
+
+print(lr_buff_intersect_df$PUMACE10)
+```
+
+Visualize light rail buffer
+
+```{r}
+plot(lr_buff, col="blue") #the first item determines the boundary
+plot(puma_az, add=TRUE)
+```
+
+Combine two dataframes
+
+```{r}
+phoenix_mesa_puma<-rbind(lr_intersect_df, lr_buff_intersect_df)
+```

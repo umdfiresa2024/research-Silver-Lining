@@ -1,0 +1,18 @@
+```{r}
+library("terra")
+library("tidyverse")
+library("sf")
+```
+
+```{r}
+origin <- "G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/"
+
+lines <- vect(paste(origin,"Metro_Lines_Regional/Metro_Lines_Regional.shp"))
+silver_line <- lines[lines$NAME == "silver"]
+
+# Filter for specific states (assuming there's a 'state' column)
+plot(silver_line, main = "DC Metro Silver Line")
+md_zip <- vect("~/Downloads/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit (1)/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit.shp")
+dc_zip <- vect("~/Downloads/DC/Zip_Codes.shp")
+va_zip <- vect("~/Downloads/VA_Zip_Codes_8831355910966913844/VA_Zip_Codes.shp")
+```
