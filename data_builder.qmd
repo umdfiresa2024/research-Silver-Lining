@@ -210,13 +210,35 @@ zip_codes_ON <- zip_codes_ON %>% mutate(NEW_SILVER = NEW_SILVER - OLD_SILVER)
 
 ```
 
+## combine zip code dataset with ZHVI
+
+```{r}
+Zhvi_comb1 <- Zhvi_DMV2 %>% select(-...1, -X)
+Zhvi_comb1 <- Zhvi_comb1 %>% rename(ZIP_CODE = RegionName )
+
+old_stat <-  zip_codes %>% filter(OLD_SILVER == 1)
+new_stat <-  zip_codes %>% filter(NEW_SILVER == 1)
+
+
+Zhvi_comb2 <- Zhvi_comb1 %>% mutate(OLD_SILVER = ifelse(ZIP_CODE %in% old_stat$ZIP_CODE ,1 ,0))
+Zhvi_comb2 <- Zhvi_comb2 %>% mutate(NEW_SILVER = ifelse(ZIP_CODE %in% new_stat$ZIP_CODE ,1 ,0))
+
+Zhvi_comb3 <- Zhvi_comb2 %>% mutate(Open = ifelse())
+Zhvi_comb2$expansion <-
+
+
+
+Zhvi_comb2 <- merge(Zhvi_comb1, zip_codes, by.x = Zhvi_comb1$RegionName , by.y = ZIP_CODE, all.x = TRUE )
+```
+
 # writing out final data :)
 
 ```{r}
-df_data <- as.data.frame(zip_codes)
+finality <- zip_codes_ON
+df_data <- as.data.frame(finality)
 ```
 
 ```{r}
-st_write(zip_codes, "zip_codes.shp")
+st_write(finality, "zip_codes.shp", append = FALSE)
 write.csv(df_data, "zip_codes.csv", row.names = FALSE)
 ```
