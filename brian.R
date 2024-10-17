@@ -63,3 +63,9 @@ FINAL_ZIP_LIST <- similarities %>% summarize(ZIPCODE)
 FINAL_ZIP_LIST<-unique(FINAL_ZIP_LIST) #get unique zips
 write.csv(FINAL_ZIP_LIST, "overlapping_zipcodes.csv")
 
+
+test <- combined %>% filter(LINE=="silver")
+
+F2 = left_join(silver_line_zip,FINAL_ZIP_LIST, by="ZIPCODE")
+
+write.csv(silver_line_zip, "silver_zips.csv")
