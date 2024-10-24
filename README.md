@@ -1,4 +1,4 @@
-# Research Question
+# Preliminary Research Results
 2024 FIRE198 Sustainability Analytics
 
 ## Team Members
@@ -16,79 +16,62 @@ costs?
 
 ## Background
 
-Write research relevance and literature review here.
+This research project aims to address one question: How has the
+expansion of public transportation, such as the Silver Line, affected
+housing prices in the Washington D.C Metropolitan Area? The Silver Line
+has two significant expansions in Fairfax and Loudoun County that are
+broken up into 2 phases. The first phase is 2014-2022, where the metro
+line connects McLean, VA to Reston, VA. The second phase is 2022 to the
+present, where the metro line continues towards Ashburn, VA.
+Understanding the effect of the presence of public transportation, like
+metro lines, especially the Silver Line, on the prices of homes can have
+a serious effect on the way public transportation is perceived by policy
+makers and homebuyers. Public transit plays a vital role in shaping
+urban development patterns, which influence accessibility and property
+values. As public transportation networks expand, they often improve
+connectivity, reducing commute times and increasing access to employment
+centers. This can lead to an increase in demand for housing in
+neighborhoods served by transit, potentially driving up housing prices.
+Alternatively, transit expansion can spur development in neglected
+areas, resulting in the displacement of current residents. This research
+question can be answered by comparing the difference in price between
+houses that are not in proximity to the Silver Line, houses that are
+within the proximity of phase 1 in 2014, and houses that are within the
+proximity of phase 2 in 2022. The results of these findings will help
+policymakers make more informed decisions about transit investments,
+urban planning and affordable housing initiatives. On top of that, it
+will help inform equitable development strategies to ensure
+transportation improvements benefit all residents and their community
+conditions.
+
+Current research shows the effects of building metros, lines, and other
+forms of transport and how it increases the amount of people who
+participate in using public transport. We know the silver line has
+developed in two phases thus affecting the people’s usage of it who live
+in the area. Additionally, we have information about how house prices
+change throughout the course of months and years based on the location
+they are in. We know how housing prices are changed based on the
+implementation of public transport, but we have a gap in information for
+the Washington D.C Metropolitan area. We know from past research that
+houses tend to increase in price based on their “closeness” to the
+station (Forrest et al., 1996). This is also proven by the Atlanta
+Beltline where the outcome was that homes increased in value by 30-40
+percent if they were within a mile of the BeltLine (Girard, 2018). By
+looking at the two phases of the Silver Line, we can examine how the
+surrounding houses have fluctuated in price. This will help us get an
+understanding of how our area has adjusted due to more opportunity to
+use these services and how implementation in the future can change the
+housing market. Additionally, we can observe how the distance from the
+transportation in our area is a cause of changes in home costs by
+looking at how other forms of public transport have affected their
+nearby areas and apply our datasets and research to look at the effects
+in the Washington D.C Metropolitan area.
 
 ## Data
 
 Explain data source here.
 
 Clean data here.
-
-``` r
-#library("tidyverse")
-#library("glue")
-
-#df <- read.csv("Zhvi.csv")
-```
-
-``` r
-#df <- df %>% filter(df$State == "MD" | df$State == "VA" | df$State == "DC")
-#df2 <- df %>% select(-StateName,-RegionType,-SizeRank,-RegionID)
-```
-
-``` r
-#write.csv(df2,file = "Zhvi_DMV2.csv")
-```
-
-## Preliminary Results
-
-Use your final dataset to visualize how the treatment variable impacts
-the outcome variable here.
-
-First I add a column saying how many bathrooms the datapoint has has.
-Only code for br5 is shown but imagine the samw thing happens fo rthe
-other 4.
-
-``` r
-#br5$BedroomCnt <- rep(5,nrow(br5))
-```
-
-creating one big data frame and double checking that nothing got nipped
-off and moving bedroomcnt to the front since its kinda imortant
-
-``` r
-#brAll <- rbind(br1,br2,br3,br4,br5)
-#sum(nrow(br1),nrow(br2),nrow(br3),nrow(br4),nrow(br5))
-#br <- brAll %>% relocate(BedroomCnt)
-```
-
-Some additional processing to get rid of horrendous date data and
-replace with good year + month data 😌
-
-``` r
-#br2 <- br  %>% pivot_longer(cols = `2000-01-31`:`2024-07-31`,names_to = "Date", values_to = "Price")
-#br3 <- br2 %>% mutate(Year = year(Date), Month = month(Date))
-#br3$Date <- NULL
-```
-
-savin it for now
-
-``` r
-#write.csv(br3,file = "Zhvi.csv")
-```
-
-due to git file size constraints, the file is saved at:
-
-### G:drives\2024 FIRE-SALining
-
-Step 1. Install necessary packages.
-
-``` r
-#install.packages("tidyverse")
-#install.packages("kableExtra")
-```
-
-Step 2. Declare that you will use these packages in this session.
 
 ``` r
 library("tidyverse")
@@ -106,47 +89,23 @@ library("tidyverse")
     ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 ``` r
-library("kableExtra")
+library("glue")
+
+df <- read.csv("dfdmv_with_treatment_NEW.csv")
 ```
-
-
-    Attaching package: 'kableExtra'
-
-    The following object is masked from 'package:dplyr':
-
-        group_rows
-
-Step 3. Upload the dataframe that you have created in Spring 2024 into
-the repository.
-
-Step 4. Open the dataframe into the RStudio Environment.
 
 ``` r
-df<-read.csv("dfdmv_with_treatment.csv")
+df2 <- df %>% filter( df$CountyName == "Loudoun County" | df$CountyName == "Fairfax County")
+#df2 <- df %>% select(-StateName,-RegionType,-SizeRank,-RegionID)
 ```
-
-Step 5. Use the **head** and **kable** function showcase the first 10
-rows of the dataframe to the reader.
 
 ``` r
-# kable(head(df))
-head(df)
+df3<- df2 %>% mutate(date=as.Date(date)) %>% 
+  mutate(open_2014=ifelse(date>as.Date("2014-07-01"),1,0))%>%
+  mutate(open_2022=ifelse(date>as.Date("2022-11-01"),1,0))
 ```
 
-      RegionName BedroomCnt State       City           CountyName    Price Year
-    1      20002          1    DC Washington District of Columbia 96340.78 2000
-    2      20002          1    DC Washington District of Columbia 96753.71 2000
-    3      20002          1    DC Washington District of Columbia 97105.10 2000
-    4      20002          1    DC Washington District of Columbia 97815.25 2000
-    5      20002          1    DC Washington District of Columbia 98604.81 2000
-    6      20002          1    DC Washington District of Columbia 99356.27 2000
-      Month       date station_open
-    1     1 2000-01-01            0
-    2     2 2000-02-01            0
-    3     3 2000-03-01            0
-    4     4 2000-04-01            0
-    5     5 2000-05-01            0
-    6     6 2000-06-01            0
+## Preliminary Results
 
 ## Question 1: What is the frequency of this data frame?
 
@@ -160,11 +119,12 @@ Step 6. Use the **names** function to display all the variables (column)
 in the dataframe.
 
 ``` r
-names(df)
+names(df3)
 ```
 
-     [1] "RegionName"   "BedroomCnt"   "State"        "City"         "CountyName"  
-     [6] "Price"        "Year"         "Month"        "date"         "station_open"
+     [1] "X"            "RegionName"   "BedroomCnt"   "State"        "City"        
+     [6] "CountyName"   "Price"        "Year"         "Month"        "date"        
+    [11] "station_open" "zip_in_2014"  "zip_in_2022"  "open_2014"    "open_2022"   
 
 ## Question 3: Which column represents the treatment variable of interest?
 
@@ -178,61 +138,72 @@ Step 7: Create a boxplot to visualize the distribution of the outcome
 variable under treatment and no treatment.
 
 ``` r
-#! eval: false
-ggplot(df, aes(x=Price)) +
+ggplot(df3, aes(x=Price)) +
   geom_histogram() +
   facet_wrap(~station_open) 
 ```
 
     `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](README_files/figure-commonmark/unnamed-chunk-13-1.png)
+![](README_files/figure-commonmark/unnamed-chunk-5-1.png)
 
 Step 8: Fit a regression model $y=\beta_0 + \beta_1 x + \epsilon$ where
 $y$ is the outcome variable and $x$ is the treatment variable. Use the
 **summary** function to display the results.
 
 ``` r
-model1<-lm(Price ~ station_open, data=df)
+model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022), data=df3)
 
 summary(model1)
 ```
 
 
     Call:
-    lm(formula = Price ~ station_open, data = df)
+    lm(formula = Price ~ (zip_in_2014 * open_2014) + (zip_in_2022 * 
+        open_2022), data = df3)
 
     Residuals:
         Min      1Q  Median      3Q     Max 
-    -503441 -266414  -97367  164093 2330457 
+    -662485 -180713  -26658  145409 1318862 
 
     Coefficients:
-                 Estimate Std. Error t value Pr(>|t|)    
-    (Intercept)    537857       2945 182.642  < 2e-16 ***
-    station_open    27241       4196   6.492 8.59e-11 ***
+                          Estimate Std. Error t value Pr(>|t|)    
+    (Intercept)             559209       6596  84.785  < 2e-16 ***
+    zip_in_2014              46069       7504   6.139 8.60e-10 ***
+    open_2014               110466       6656  16.597  < 2e-16 ***
+    zip_in_2022            -198980       6130 -32.462  < 2e-16 ***
+    open_2022               186716      17029  10.965  < 2e-16 ***
+    zip_in_2014:open_2014    59012      10760   5.484 4.25e-08 ***
+    zip_in_2022:open_2022   -60827      20557  -2.959  0.00309 ** 
     ---
     Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-    Residual standard error: 371100 on 31298 degrees of freedom
-    Multiple R-squared:  0.001345,  Adjusted R-squared:  0.001313 
-    F-statistic: 42.15 on 1 and 31298 DF,  p-value: 8.586e-11
+    Residual standard error: 267500 on 11067 degrees of freedom
+    Multiple R-squared:  0.2231,    Adjusted R-squared:  0.2227 
+    F-statistic: 529.7 on 6 and 11067 DF,  p-value: < 2.2e-16
 
 ## Question 5: What is the predicted value of the outcome variable when treatment=0?
 
-Answer: 537857
+Answer: 559209
 
 ## Question 6: What is predicted value of the outcome variable when treatment=1?
 
-Answer:537857 + 27241 = 565098
+Answer:
 
-basically + 30k
+2014:
+
+559209+46069+110466+59012=774756
+
+2022:
+
+559209+(-198980)+186716+(-60827)=486118
 
 ## Question 7: What is the equation that describes the linear regression above? Please include an explanation of the variables and subscripts.
 
 Answer:
 
 $$
-Price = \beta_0 + \beta_1 station_open
+Price_{it} = \beta_0 \times (\text{zip_in_2014}\times \text{open_2014})+ \beta_1 \times \text{zip_in_2014}_i + \beta_3 \times \text{open_2014}_t + \\ \gamma_1 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_2 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_3 (\text{zip_in_2022}_i \times \text{open_2022}_t) +\epsilon_{it}
 $$
 
 I love latex 😌 (it refuses to show up)
@@ -246,190 +217,99 @@ Answer: Month, Year, CountyName, BedroomCnt, RegionName (zip code)
 Answer:
 
 ``` r
-model2 <-lm(Price ~ station_open + as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt) + as.factor(RegionName ), data = df)
-```
-
-``` r
-summary(model2)
+model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022)+ as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt),data=df3)
+summary(model1)
 ```
 
 
     Call:
-    lm(formula = Price ~ station_open + as.factor(Month) + as.factor(Year) + 
-        as.factor(CountyName) + as.factor(BedroomCnt) + as.factor(RegionName), 
-        data = df)
+    lm(formula = Price ~ (zip_in_2014 * open_2014) + (zip_in_2022 * 
+        open_2022) + as.factor(Month) + as.factor(Year) + as.factor(CountyName) + 
+        as.factor(BedroomCnt), data = df3)
 
     Residuals:
         Min      1Q  Median      3Q     Max 
-    -569045  -84351  -11556   65382 1236668 
+    -336134  -75266  -16047   54599  863440 
 
-    Coefficients: (5 not defined because of singularities)
-                                               Estimate Std. Error t value Pr(>|t|)
-    (Intercept)                                  -18642       7893  -2.362 0.018192
-    station_open                                 -52917       4499 -11.762  < 2e-16
-    as.factor(Month)2                              2364       4391   0.538 0.590331
-    as.factor(Month)3                              4920       4391   1.121 0.262497
-    as.factor(Month)4                              7770       4390   1.770 0.076774
-    as.factor(Month)5                             10460       4390   2.383 0.017183
-    as.factor(Month)6                             12615       4390   2.874 0.004061
-    as.factor(Month)7                             14211       4390   3.237 0.001208
-    as.factor(Month)8                             15756       4445   3.545 0.000393
-    as.factor(Month)9                             16972       4444   3.819 0.000134
-    as.factor(Month)10                            18438       4444   4.149 3.35e-05
-    as.factor(Month)11                            20252       4444   4.558 5.19e-06
-    as.factor(Month)12                            22434       4443   5.049 4.47e-07
-    as.factor(Year)2001                           35547       6734   5.279 1.31e-07
-    as.factor(Year)2002                           79572       6699  11.878  < 2e-16
-    as.factor(Year)2003                          127534       6663  19.141  < 2e-16
-    as.factor(Year)2004                          190232       6649  28.609  < 2e-16
-    as.factor(Year)2005                          284061       6636  42.806  < 2e-16
-    as.factor(Year)2006                          330731       6622  49.947  < 2e-16
-    as.factor(Year)2007                          316082       6606  47.852  < 2e-16
-    as.factor(Year)2008                          282169       6607  42.709  < 2e-16
-    as.factor(Year)2009                          255719       6573  38.907  < 2e-16
-    as.factor(Year)2010                          260539       6548  39.786  < 2e-16
-    as.factor(Year)2011                          259086       6541  39.608  < 2e-16
-    as.factor(Year)2012                          273775       6533  41.906  < 2e-16
-    as.factor(Year)2013                          313492       6506  48.182  < 2e-16
-    as.factor(Year)2014                          350605       6515  53.819  < 2e-16
-    as.factor(Year)2015                          367570       6528  56.302  < 2e-16
-    as.factor(Year)2016                          381513       6500  58.697  < 2e-16
-    as.factor(Year)2017                          397551       6499  61.173  < 2e-16
-    as.factor(Year)2018                          417901       6499  64.304  < 2e-16
-    as.factor(Year)2019                          436674       6502  67.158  < 2e-16
-    as.factor(Year)2020                          468314       6499  72.061  < 2e-16
-    as.factor(Year)2021                          522043       6499  80.329  < 2e-16
-    as.factor(Year)2022                          568093       6506  87.315  < 2e-16
-    as.factor(Year)2023                          576596       6623  87.059  < 2e-16
-    as.factor(Year)2024                          599682       7614  78.764  < 2e-16
-    as.factor(CountyName)District of Columbia   -173259       6459 -26.824  < 2e-16
-    as.factor(CountyName)Fairfax County          -77890       7081 -11.000  < 2e-16
-    as.factor(CountyName)Falls Church City       -90417       6520 -13.867  < 2e-16
-    as.factor(CountyName)Loudoun County         -353552       7864 -44.958  < 2e-16
-    as.factor(CountyName)Prince Georges County  -553292       6767 -81.766  < 2e-16
-    as.factor(BedroomCnt)2                       207960       3001  69.294  < 2e-16
-    as.factor(BedroomCnt)3                       395434       3057 129.362  < 2e-16
-    as.factor(BedroomCnt)4                       513004       3200 160.307  < 2e-16
-    as.factor(BedroomCnt)5                       730381       3261 224.005  < 2e-16
-    as.factor(RegionName)20003                   258970       7410  34.951  < 2e-16
-    as.factor(RegionName)20004                   311627       9564  32.582  < 2e-16
-    as.factor(RegionName)20005                   307332       8529  36.033  < 2e-16
-    as.factor(RegionName)20007                   512459       5887  87.045  < 2e-16
-    as.factor(RegionName)20019                  -219757       7410 -29.656  < 2e-16
-    as.factor(RegionName)20024                   132234       7896  16.746  < 2e-16
-    as.factor(RegionName)20037                   542184       8297  65.345  < 2e-16
-    as.factor(RegionName)20147                    81205       7474  10.866  < 2e-16
-    as.factor(RegionName)20148                    76316       8070   9.457  < 2e-16
-    as.factor(RegionName)20166                       NA         NA      NA       NA
-    as.factor(RegionName)20170                  -288091       6685 -43.098  < 2e-16
-    as.factor(RegionName)20171                  -178800       6691 -26.722  < 2e-16
-    as.factor(RegionName)20190                  -163478       6322 -25.860  < 2e-16
-    as.factor(RegionName)20743                    24690       7973   3.097 0.001958
-    as.factor(RegionName)20774                   172114       7301  23.574  < 2e-16
-    as.factor(RegionName)20785                       NA         NA      NA       NA
-    as.factor(RegionName)22043                  -103221       6725 -15.349  < 2e-16
-    as.factor(RegionName)22046                       NA         NA      NA       NA
-    as.factor(RegionName)22102                   167950       6322  26.567  < 2e-16
-    as.factor(RegionName)22182                       NA         NA      NA       NA
-    as.factor(RegionName)22201                   129647       7891  16.430  < 2e-16
-    as.factor(RegionName)22203                   -33821       7891  -4.286 1.82e-05
-    as.factor(RegionName)22205                    27183       8150   3.335 0.000854
-    as.factor(RegionName)22209                   185944       8638  21.526  < 2e-16
-    as.factor(RegionName)22213                       NA         NA      NA       NA
-                                                  
-    (Intercept)                                *  
-    station_open                               ***
-    as.factor(Month)2                             
-    as.factor(Month)3                             
-    as.factor(Month)4                          .  
-    as.factor(Month)5                          *  
-    as.factor(Month)6                          ** 
-    as.factor(Month)7                          ** 
-    as.factor(Month)8                          ***
-    as.factor(Month)9                          ***
-    as.factor(Month)10                         ***
-    as.factor(Month)11                         ***
-    as.factor(Month)12                         ***
-    as.factor(Year)2001                        ***
-    as.factor(Year)2002                        ***
-    as.factor(Year)2003                        ***
-    as.factor(Year)2004                        ***
-    as.factor(Year)2005                        ***
-    as.factor(Year)2006                        ***
-    as.factor(Year)2007                        ***
-    as.factor(Year)2008                        ***
-    as.factor(Year)2009                        ***
-    as.factor(Year)2010                        ***
-    as.factor(Year)2011                        ***
-    as.factor(Year)2012                        ***
-    as.factor(Year)2013                        ***
-    as.factor(Year)2014                        ***
-    as.factor(Year)2015                        ***
-    as.factor(Year)2016                        ***
-    as.factor(Year)2017                        ***
-    as.factor(Year)2018                        ***
-    as.factor(Year)2019                        ***
-    as.factor(Year)2020                        ***
-    as.factor(Year)2021                        ***
-    as.factor(Year)2022                        ***
-    as.factor(Year)2023                        ***
-    as.factor(Year)2024                        ***
-    as.factor(CountyName)District of Columbia  ***
-    as.factor(CountyName)Fairfax County        ***
-    as.factor(CountyName)Falls Church City     ***
-    as.factor(CountyName)Loudoun County        ***
-    as.factor(CountyName)Prince Georges County ***
-    as.factor(BedroomCnt)2                     ***
-    as.factor(BedroomCnt)3                     ***
-    as.factor(BedroomCnt)4                     ***
-    as.factor(BedroomCnt)5                     ***
-    as.factor(RegionName)20003                 ***
-    as.factor(RegionName)20004                 ***
-    as.factor(RegionName)20005                 ***
-    as.factor(RegionName)20007                 ***
-    as.factor(RegionName)20019                 ***
-    as.factor(RegionName)20024                 ***
-    as.factor(RegionName)20037                 ***
-    as.factor(RegionName)20147                 ***
-    as.factor(RegionName)20148                 ***
-    as.factor(RegionName)20166                    
-    as.factor(RegionName)20170                 ***
-    as.factor(RegionName)20171                 ***
-    as.factor(RegionName)20190                 ***
-    as.factor(RegionName)20743                 ** 
-    as.factor(RegionName)20774                 ***
-    as.factor(RegionName)20785                    
-    as.factor(RegionName)22043                 ***
-    as.factor(RegionName)22046                    
-    as.factor(RegionName)22102                 ***
-    as.factor(RegionName)22182                    
-    as.factor(RegionName)22201                 ***
-    as.factor(RegionName)22203                 ***
-    as.factor(RegionName)22205                 ***
-    as.factor(RegionName)22209                 ***
-    as.factor(RegionName)22213                    
+    Coefficients:
+                                        Estimate Std. Error t value Pr(>|t|)    
+    (Intercept)                           -46473       9742  -4.770 1.86e-06 ***
+    zip_in_2014                           102952       3980  25.866  < 2e-16 ***
+    open_2014                             -12022      13298  -0.904  0.36599    
+    zip_in_2022                          -196381       3279 -59.883  < 2e-16 ***
+    open_2022                              27684      23543   1.176  0.23965    
+    as.factor(Month)2                       2121       6287   0.337  0.73592    
+    as.factor(Month)3                       4568       6287   0.727  0.46749    
+    as.factor(Month)4                       7397       6287   1.176  0.23944    
+    as.factor(Month)5                      10223       6286   1.626  0.10390    
+    as.factor(Month)6                      12424       6286   1.977  0.04811 *  
+    as.factor(Month)7                      13874       6286   2.207  0.02732 *  
+    as.factor(Month)8                      15149       6392   2.370  0.01780 *  
+    as.factor(Month)9                      16129       6391   2.524  0.01162 *  
+    as.factor(Month)10                     17312       6391   2.709  0.00676 ** 
+    as.factor(Month)11                     18902       6391   2.958  0.00311 ** 
+    as.factor(Month)12                     21284       6478   3.286  0.00102 ** 
+    as.factor(Year)2001                    45015      10152   4.434 9.33e-06 ***
+    as.factor(Year)2002                    85737       9993   8.579  < 2e-16 ***
+    as.factor(Year)2003                   128637       9852  13.058  < 2e-16 ***
+    as.factor(Year)2004                   193957       9852  19.688  < 2e-16 ***
+    as.factor(Year)2005                   296731       9852  30.120  < 2e-16 ***
+    as.factor(Year)2006                   331029       9852  33.602  < 2e-16 ***
+    as.factor(Year)2007                   289118       9787  29.540  < 2e-16 ***
+    as.factor(Year)2008                   228053       9793  23.288  < 2e-16 ***
+    as.factor(Year)2009                   193019       9726  19.845  < 2e-16 ***
+    as.factor(Year)2010                   215820       9669  22.321  < 2e-16 ***
+    as.factor(Year)2011                   216640       9641  22.471  < 2e-16 ***
+    as.factor(Year)2012                   244203       9613  25.403  < 2e-16 ***
+    as.factor(Year)2013                   288174       9613  29.977  < 2e-16 ***
+    as.factor(Year)2014                   319527      11080  28.838  < 2e-16 ***
+    as.factor(Year)2015                   326564      16232  20.119  < 2e-16 ***
+    as.factor(Year)2016                   331284      16172  20.485  < 2e-16 ***
+    as.factor(Year)2017                   339258      16171  20.980  < 2e-16 ***
+    as.factor(Year)2018                   354138      16171  21.900  < 2e-16 ***
+    as.factor(Year)2019                   369683      16171  22.861  < 2e-16 ***
+    as.factor(Year)2020                   396350      16171  24.510  < 2e-16 ***
+    as.factor(Year)2021                   453136      16171  28.022  < 2e-16 ***
+    as.factor(Year)2022                   510729      16304  31.325  < 2e-16 ***
+    as.factor(Year)2023                   531878      27874  19.081  < 2e-16 ***
+    as.factor(Year)2024                   570026      28546  19.969  < 2e-16 ***
+    as.factor(CountyName)Loudoun County    47834       3482  13.737  < 2e-16 ***
+    as.factor(BedroomCnt)2                130855       4732  27.655  < 2e-16 ***
+    as.factor(BedroomCnt)3                282572       4657  60.680  < 2e-16 ***
+    as.factor(BedroomCnt)4                465251       4672  99.589  < 2e-16 ***
+    as.factor(BedroomCnt)5                658186       4772 137.939  < 2e-16 ***
+    zip_in_2014:open_2014                   7008       5507   1.273  0.20322    
+    zip_in_2022:open_2022                 -59862      10468  -5.719 1.10e-08 ***
     ---
     Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-    Residual standard error: 159900 on 31234 degrees of freedom
-    Multiple R-squared:  0.815, Adjusted R-squared:  0.8147 
-    F-statistic:  2117 on 65 and 31234 DF,  p-value: < 2.2e-16
+    Residual standard error: 136200 on 11027 degrees of freedom
+    Multiple R-squared:  0.7993,    Adjusted R-squared:  0.7985 
+    F-statistic: 954.7 on 46 and 11027 DF,  p-value: < 2.2e-16
 
 # Questions for Week 5
 
 ## Question 10: In a difference-in-differences (DiD) model, what is the treatment GROUP?
 
-Answer:
+Answer: zip_in_2014, zip_in_2022
 
 ## Question 11: In a DiD model, what are the control groups?
 
-Answer:
+Answer: other houses in fairfax and loudoun county.
 
 ## Question 12: What is the DiD regression equation that will answer your research question?
 
 ## Question 13: Run your DiD regressions below. What are the results of the DiD regression?
 
+When the first part of the rail opened, the house prices increased by
+7008.
+
+When the second part of the rail opened, the house prices decreased by
+59862.
+
 ## Question 14: What are the next steps of your research?
+
+Look at impact of bedroom counts, as well as other potential variables.
 
 Step 9: Change the document format to gfm
 
@@ -450,3 +330,15 @@ Step 13: If your team has a complete dataframe that includes both the
 treated and outcome variable, you are done with the assignment. If not,
 make a research plan in Notion to collect data on the outcome and
 treatment variable and combine it into one dataframe.
+
+## References
+
+Zillow Home Value Index. \[Dataset\]. Zillow
+Inc. https://www.zillow.com/research/data/
+
+Forrest, D., Glen, J., & Ward, R. (1996). The impact of a light rail
+system on the structure of house prices: a hedonic longitudinal study.
+Journal of Transport economics and Policy, 15-29.
+
+Girard, P. (2018). URBAN REDEVELOPMENT AND HOUSING VALUES: A CASE STUDY
+OF THE ATLANTA BELTLINE.

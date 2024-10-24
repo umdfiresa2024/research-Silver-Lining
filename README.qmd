@@ -19,7 +19,9 @@ How does the opening/announcement of the Silver Line affect housing costs?
 
 ## Background
 
-Write research relevance and literature review here.
+This research project aims to address one question: How has the expansion of public transportation, such as the Silver Line, affected housing prices in the Washington D.C Metropolitan Area? The Silver Line has two significant expansions in Fairfax and Loudoun County that are broken up into 2 phases. The first phase is 2014-2022, where the metro line connects McLean, VA to Reston, VA. The second phase is 2022 to the present, where the metro line continues towards Ashburn, VA. Understanding the effect of the presence of public transportation, like metro lines, especially the Silver Line, on the prices of homes can have a serious effect on the way public transportation is perceived by policy makers and homebuyers. Public transit plays a vital role in shaping urban development patterns, which influence accessibility and property values. As public transportation networks expand, they often improve connectivity, reducing commute times and increasing access to employment centers. This can lead to an increase in demand for housing in neighborhoods served by transit, potentially driving up housing prices. Alternatively, transit expansion can spur development in neglected areas, resulting in the displacement of current residents. This research question can be answered by comparing the difference in price between houses that are not in proximity to the Silver Line, houses that are within the proximity of phase 1 in 2014, and houses that are within the proximity of phase 2 in 2022. The results of these findings will help policymakers make more informed decisions about transit investments, urban planning and affordable housing initiatives. On top of that, it will help inform equitable development strategies to ensure transportation improvements benefit all residents and their community conditions.
+
+Current research shows the effects of building metros, lines, and other forms of transport and how it increases the amount of people who participate in using public transport. We know the silver line has developed in two phases thus affecting the people’s usage of it who live in the area. Additionally, we have information about how house prices change throughout the course of months and years based on the location they are in. We know how housing prices are changed based on the implementation of public transport, but we have a gap in information for the Washington D.C Metropolitan area. We know from past research that houses tend to increase in price based on their “closeness” to the station (Forrest et al., 1996). This is also proven by the Atlanta Beltline where the outcome was that homes increased in value by 30-40 percent if they were within a mile of the BeltLine (Girard, 2018). By looking at the two phases of the Silver Line, we can examine how the surrounding houses have fluctuated in price. This will help us get an understanding of how our area has adjusted due to more opportunity to use these services and how implementation in the future can change the housing market. Additionally, we can observe how the distance from the transportation in our area is a cause of changes in home costs by looking at how other forms of public transport have affected their nearby areas and apply our datasets and research to look at the effects in the Washington D.C Metropolitan area.
 
 ## Data
 
@@ -28,92 +30,27 @@ Explain data source here.
 Clean data here.
 
 ```{r}
-#library("tidyverse")
-#library("glue")
+library("tidyverse")
+library("glue")
 
-#df <- read.csv("Zhvi.csv")
+df <- read.csv("dfdmv_with_treatment_NEW.csv")
 
 ```
 
 ```{r}
-#df <- df %>% filter(df$State == "MD" | df$State == "VA" | df$State == "DC")
+df2 <- df %>% filter( df$CountyName == "Loudoun County" | df$CountyName == "Fairfax County")
 #df2 <- df %>% select(-StateName,-RegionType,-SizeRank,-RegionID)
 ```
 
 ```{r}
-#write.csv(df2,file = "Zhvi_DMV2.csv")
+df3<- df2 %>% mutate(date=as.Date(date)) %>% 
+  mutate(open_2014=ifelse(date>as.Date("2014-07-01"),1,0))%>%
+  mutate(open_2022=ifelse(date>as.Date("2022-11-01"),1,0))
+
+
 ```
 
 ## Preliminary Results
-
-Use your final dataset to visualize how the treatment variable impacts the outcome variable here.
-
-First I add a column saying how many bathrooms the datapoint has has. Only code for br5 is shown but imagine the samw thing happens fo rthe other 4.
-
-```{r}
-#br5$BedroomCnt <- rep(5,nrow(br5))
-```
-
-creating one big data frame and double checking that nothing got nipped off and moving bedroomcnt to the front since its kinda imortant
-
-```{r}
-#brAll <- rbind(br1,br2,br3,br4,br5)
-#sum(nrow(br1),nrow(br2),nrow(br3),nrow(br4),nrow(br5))
-#br <- brAll %>% relocate(BedroomCnt)
-```
-
-Some additional processing to get rid of horrendous date data and replace with good year + month data 😌
-
-```{r}
-#br2 <- br  %>% pivot_longer(cols = `2000-01-31`:`2024-07-31`,names_to = "Date", values_to = "Price")
-#br3 <- br2 %>% mutate(Year = year(Date), Month = month(Date))
-#br3$Date <- NULL
-```
-
-savin it for now
-
-```{r}
-#write.csv(br3,file = "Zhvi.csv")
-```
-
-due to git file size constraints, the file is saved at:
-
-### G:\Shared drives\\2024 FIRE-SA\DATA\Silver Lining
-
----
-title: "Research Question"
-format: gfm
-editor: visual
----
-
-Step 1. Install necessary packages.
-
-```{r}
-#install.packages("tidyverse")
-#install.packages("kableExtra")
-```
-
-Step 2. Declare that you will use these packages in this session.
-
-```{r}
-library("tidyverse")
-library("kableExtra")
-```
-
-Step 3. Upload the dataframe that you have created in Spring 2024 into the repository.
-
-Step 4. Open the dataframe into the RStudio Environment.
-
-```{r}
-df<-read.csv("dfdmv_with_treatment.csv")
-```
-
-Step 5. Use the **head** and **kable** function showcase the first 10 rows of the dataframe to the reader.
-
-```{r}
-# kable(head(df))
-head(df)
-```
 
 ## Question 1: What is the frequency of this data frame?
 
@@ -126,7 +63,7 @@ Answer: zip code
 Step 6. Use the **names** function to display all the variables (column) in the dataframe.
 
 ```{r}
-names(df)
+names(df3)
 
 ```
 
@@ -141,8 +78,7 @@ Answer: Price (i wuv munni)
 Step 7: Create a boxplot to visualize the distribution of the outcome variable under treatment and no treatment.
 
 ```{r}
-#! eval: false
-ggplot(df, aes(x=Price)) +
+ggplot(df3, aes(x=Price)) +
   geom_histogram() +
   facet_wrap(~station_open) 
 ```
@@ -150,27 +86,33 @@ ggplot(df, aes(x=Price)) +
 Step 8: Fit a regression model $y=\beta_0 + \beta_1 x + \epsilon$ where $y$ is the outcome variable and $x$ is the treatment variable. Use the **summary** function to display the results.
 
 ```{r}
-model1<-lm(Price ~ station_open, data=df)
+model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022), data=df3)
 
 summary(model1)
 ```
 
 ## Question 5: What is the predicted value of the outcome variable when treatment=0?
 
-Answer: 537857
+Answer: 559209
 
 ## Question 6: What is predicted value of the outcome variable when treatment=1?
 
-Answer:537857 + 27241 = 565098
+Answer:
 
-basically + 30k
+2014:
+
+559209+46069+110466+59012=774756
+
+2022:
+
+559209+(-198980)+186716+(-60827)=486118
 
 ## Question 7: What is the equation that describes the linear regression above? Please include an explanation of the variables and subscripts.
 
 Answer:
 
 $$
-Price = \beta_0 + \beta_1 station_open
+Price_{it} = \beta_0 \times (\text{zip_in_2014}\times \text{open_2014})+ \beta_1 \times \text{zip_in_2014}_i + \beta_3 \times \text{open_2014}_t + \\ \gamma_1 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_2 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_3 (\text{zip_in_2022}_i \times \text{open_2022}_t) +\epsilon_{it}
 $$
 
 I love latex 😌 (it refuses to show up)
@@ -184,28 +126,32 @@ Answer: Month, Year, CountyName, BedroomCnt, RegionName (zip code)
 Answer:
 
 ```{r}
-model2 <-lm(Price ~ station_open + as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt) + as.factor(RegionName ), data = df)
-```
+model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022)+ as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt),data=df3)
+summary(model1)
 
-```{r}
-summary(model2)
 ```
 
 # Questions for Week 5
 
 ## Question 10: In a difference-in-differences (DiD) model, what is the treatment GROUP?
 
-Answer:
+Answer: zip_in_2014, zip_in_2022
 
 ## Question 11: In a DiD model, what are the control groups?
 
-Answer:
+Answer: other houses in fairfax and loudoun county.
 
 ## Question 12: What is the DiD regression equation that will answer your research question?
 
 ## Question 13: Run your DiD regressions below. What are the results of the DiD regression?
 
+When the first part of the rail opened, the house prices increased by 7008.
+
+When the second part of the rail opened, the house prices decreased by 59862.
+
 ## Question 14: What are the next steps of your research?
+
+Look at impact of bedroom counts, as well as other potential variables.
 
 Step 9: Change the document format to gfm
 
@@ -218,3 +164,11 @@ Step 12: Push the document back to GitHub and observe your beautiful document in
 Step 13: If your team has a complete dataframe that includes both the treated and outcome variable, you are done with the assignment. If not, make a research plan in Notion to collect data on the outcome and treatment variable and combine it into one dataframe.
 
 Step 13: If your team has a complete dataframe that includes both the treated and outcome variable, you are done with the assignment. If not, make a research plan in Notion to collect data on the outcome and treatment variable and combine it into one dataframe.
+
+## References
+
+Zillow Home Value Index. \[Dataset\]. Zillow Inc. https://www.zillow.com/research/data/
+
+Forrest, D., Glen, J., & Ward, R. (1996). The impact of a light rail system on the structure of house prices: a hedonic longitudinal study. Journal of Transport economics and Policy, 15-29.
+
+Girard, P. (2018). URBAN REDEVELOPMENT AND HOUSING VALUES: A CASE STUDY OF THE ATLANTA BELTLINE.
