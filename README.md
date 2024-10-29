@@ -3,13 +3,9 @@
 
 ## Team Members
 
-Write names of team members here.
-
 Raphael Coronel, Taylor Woods, Brian Huang, Joseph Tang
 
 ## Research Question
-
-Write research question here.
 
 How does the opening/announcement of the Silver Line affect housing
 costs?
@@ -69,7 +65,8 @@ in the Washington D.C Metropolitan area.
 
 ## Data
 
-Explain data source here.
+Our data source is the ZHVI (Zillow Home Value Index) which collects the
+house price of different areas.
 
 Clean data here.
 
@@ -80,7 +77,7 @@ library("tidyverse")
     ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
     ✔ dplyr     1.1.4     ✔ readr     2.1.5
     ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+    ✔ ggplot2   3.5.0     ✔ tibble    3.2.1
     ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
     ✔ purrr     1.0.2     
     ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
@@ -132,7 +129,7 @@ Answer: station_open
 
 ## Question 4: Which column represents the outcome variable of interest?
 
-Answer: Price (i wuv munni)
+Answer: Price
 
 Step 7: Create a boxplot to visualize the distribution of the outcome
 variable under treatment and no treatment.
@@ -206,8 +203,6 @@ $$
 Price_{it} = \beta_0 \times (\text{zip_in_2014}\times \text{open_2014})+ \beta_1 \times \text{zip_in_2014}_i + \beta_3 \times \text{open_2014}_t + \\ \gamma_1 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_2 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_3 (\text{zip_in_2022}_i \times \text{open_2022}_t) +\epsilon_{it}
 $$
 
-I love latex 😌 (it refuses to show up)
-
 ## Question 8: What fixed effects can be included in the regression? What does each fixed effects control for? Please include a new equation that incorporates the fixed effects.
 
 Answer: Month, Year, CountyName, BedroomCnt, RegionName (zip code)
@@ -217,8 +212,8 @@ Answer: Month, Year, CountyName, BedroomCnt, RegionName (zip code)
 Answer:
 
 ``` r
-model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022)+ as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt),data=df3)
-summary(model1)
+model2<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022)+ as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt),data=df3)
+summary(model2)
 ```
 
 
@@ -295,7 +290,7 @@ Answer: zip_in_2014, zip_in_2022
 
 ## Question 11: In a DiD model, what are the control groups?
 
-Answer: other houses in fairfax and loudoun county.
+Answer: other houses in Fairfax and Loudoun county.
 
 ## Question 12: What is the DiD regression equation that will answer your research question?
 
@@ -330,6 +325,28 @@ Step 13: If your team has a complete dataframe that includes both the
 treated and outcome variable, you are done with the assignment. If not,
 make a research plan in Notion to collect data on the outcome and
 treatment variable and combine it into one dataframe.
+
+## Preliminary Graph
+
+``` r
+by_opening <- df3 %>%
+  group_by(open_2014,open_2022,date) %>%
+  summarize(average_price = mean(Price))
+```
+
+    `summarise()` has grouped output by 'open_2014', 'open_2022'. You can override
+    using the `.groups` argument.
+
+``` r
+ggplot(by_opening, aes(x=date,
+                       y=average_price))+
+  geom_line(color="blue") +
+  geom_vline(xintercept = as.numeric(as.Date("2014-07-01")), color="black",linetype="dashed") +
+  geom_vline(xintercept = as.numeric(as.Date("2022-11-01")), color="black",linetype="dashed") +
+  labs(title = "ZHVI Values of Virginia Zip Codes Near the Silver Line", x = "Date", y = "Price")
+```
+
+![](README_files/figure-commonmark/unnamed-chunk-8-1.png)
 
 ## References
 
