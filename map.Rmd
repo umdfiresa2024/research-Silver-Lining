@@ -1,0 +1,105 @@
+packages
+
+```{r}
+library("terra")
+library("tidyverse")
+library("sf")
+
+```
+
+```{r}
+df <- read.csv("dfdmv_with_treatment_NEW.csv")
+```
+
+```{r}
+origin <- "G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/"
+
+lines <- vect(paste(origin,"Metro_Lines_Regional/Metro_Lines_Regional.shp",sep = ''))
+silver_line <- lines[lines$NAME == "silver"]
+
+# Filter for specific states (assuming there's a 'state' column)
+# plot(silver_line, main = "DC Metro Silver Line")
+md_zip <- vect(paste(origin,"MD/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit.shp",sep = ''))
+dc_zip <- vect(paste(origin,"DC/Zip_Codes.shp",sep = ''))
+va_zip <- vect(paste(origin,"VA/VA_Zip_Codes.shp",sep = ''))
+```
+
+```{r}
+silver_buff <-buffer(silver_line, width=5000) #5km
+plot(silver_line, col = "red")
+plot(md_zip, add=  TRUE)
+plot(dc_zip,add = TRUE)
+
+```
+
+```{r}
+origin <- "G:/Shared drives/2024 FIRE-SA/DATA/Silver Lining/"
+
+lines <- st_read(paste(origin,"Metro_Lines_Regional/Metro_Lines_Regional.shp",sep = ''))
+silver_line <- lines[lines$NAME == "silver"]
+
+# Filter for specific states (assuming there's a 'state' column)
+# plot(silver_line, main = "DC Metro Silver Line")
+md_zip <- st_read(paste(origin,"MD/Maryland_Political_Boundaries_-_ZIP_Codes_-_5_Digit.shp",sep = ''))
+dc_zip <- st_read(paste(origin,"DC/Zip_Codes.shp",sep = ''))
+va_zip <- st_read(paste(origin,"VA/VA_Zip_Codes.shp",sep = ''))
+```
+
+```{r}
+df <- "dfdmv_with_treatment_NEW"
+
+df2 <- dfdmv_with_treatment_NEW %>% filter(zip_in_2014 == 1)
+df12 <- dfdmv_with_treatment_NEW %>% filter(zip_in_2022 == 1)
+
+distinct_values14 <- unique(df2$RegionName)
+print(distinct_values14)
+distinct_values22 <- unique(df12$RegionName)
+print(distinct_values22)
+```
+
+Reston 20190, McLean 22102, Vienna 22182
+
+Ashburn 20148, Sterling 20166, Herndon 20170,
+
+```{r}
+plot(va_zip)
+```
+
+```{r}
+
+va_ziper <- st_read(paste(origin,"VA/VA_Zip_Codes.shp",sep = ''))
+```
+
+```{r}
+
+df3<-as.data.frame(va_ziper)
+df4 <- df3 %>% filter(ZIP_CODE == 20190 | ZIP_CODE == 22102 | ZIP_CODE == 22182)
+sf_object <- vect(df4) 
+
+```
+
+```{r}
+library(sf)
+sf_object <- st_as_sf(df4, crs = 4326) 
+spat_vector <- vect(sf_object)
+```
+
+```{r}
+df5 <- df3 %>% mutate(hilight = ifelse(ZIP_CODE == 20190 | ZIP_CODE == 22102 | ZIP_CODE == 22182 ,1,0)  )
+zips = c(20190, 22102, 22182, 20147, 20148, 20166, 20170, 20171, 20190)
+df52 <- df3 %>% mutate(hilight = ifelse(ZIP_CODE %in% zips ,1,0)  )
+
+```
+
+```{r}
+
+va_zip_2 <- merge(va_zip,df52) 
+
+```
+
+```{r}
+plot(silver_line, col = "red")
+plot(md_zip, add=  TRUE)
+plot(dc_zip,add = TRUE)
+plot(va_zip_2, "hilight",add = TRUE) 
+```
