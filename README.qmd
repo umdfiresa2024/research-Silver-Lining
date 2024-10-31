@@ -35,14 +35,12 @@ df <- read.csv("dfdmv_with_treatment_NEW.csv")
 
 ```{r}
 df2 <- df %>% filter( df$CountyName == "Loudoun County" | df$CountyName == "Fairfax County")
-#df2 <- df %>% select(-StateName,-RegionType,-SizeRank,-RegionID)
 ```
 
 ```{r}
 df3<- df2 %>% mutate(date=as.Date(date)) %>% 
   mutate(open_2014=ifelse(date>as.Date("2014-07-01"),1,0))%>%
   mutate(open_2022=ifelse(date>as.Date("2022-11-01"),1,0))
-
 
 ```
 
@@ -166,11 +164,21 @@ by_opening <- df3 %>%
   group_by(open_2014,open_2022,date) %>%
   summarize(average_price = mean(Price))
 
-ggplot(by_opening, aes(x=date,
-                       y=average_price))+
-  geom_line(color="blue") +
+df_control <- read.csv("dfsilvercontrol.csv")
+
+df_control2 <- df_control %>%
+  group_by(date) %>%
+  summarize(average_price_ctrl = mean(Price))
+
+df_control2$date <- as.Date(df_control2$date)
+
+df_combined <- by_opening %>% left_join(df_control2, by="date")
+ggplot()+
+  geom_line(data=df_combined, aes(x=date,y=average_price,col="Silver Line")) +
+  geom_line(data=df_combined, aes(x=date,y=average_price_ctrl,col="Control Group")) +
   geom_vline(xintercept = as.numeric(as.Date("2014-07-01")), color="black",linetype="dashed") +
   geom_vline(xintercept = as.numeric(as.Date("2022-11-01")), color="black",linetype="dashed") +
+  scale_color_manual("Legend", values=c("red", "blue")) +
   labs(title = "ZHVI Values of Virginia Zip Codes Near the Silver Line", x = "Date", y = "Price")
 ```
 
