@@ -1,4 +1,4 @@
-# Preliminary Research Results
+# How does the opening of the Silver Line affect housing costs?
 2024 FIRE198 Sustainability Analytics
 
 ## Team Members
@@ -7,8 +7,8 @@ Raphael Coronel, Taylor Woods, Brian Huang, Joseph Tang
 
 ## Research Question
 
-How does the opening/announcement of the Silver Line affect housing
-costs?
+***How does the opening/announcement of the Silver Line affect housing
+costs?***
 
 ## Background
 
@@ -329,7 +329,8 @@ When the second part of the rail opened, the house prices decreased by
 
 ## Question 14: What are the next steps of your research?
 
-Look at impact of bedroom counts, as well as other potential variables.
+Look at impact of bedroom counts, as well as other potential variables
+like mortgage rates to further minimize the confounding variables.
 
 Step 9: Change the document format to gfm
 
