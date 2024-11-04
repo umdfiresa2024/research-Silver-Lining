@@ -134,12 +134,38 @@ Step 7: Create a boxplot to visualize the distribution of the outcome
 variable under treatment and no treatment.
 
 ``` r
-ggplot(df3, aes(x=Price)) +
-  geom_histogram() +
-  facet_wrap(~station_open) 
-```
+df_2014 <- df3 %>%
+  filter(zip_in_2014==1) %>%
+  group_by(date) %>%
+  summarize(average_price_2014 = mean(Price))
 
-    `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+df_2022 <- df3 %>%
+  filter(zip_in_2022==1) %>%
+  group_by(date) %>%
+  summarize(average_price_2022 = mean(Price))
+
+df_years <- df_2014 %>% left_join(df_2022, by="date")
+
+df_control <- read.csv("dfsilvercontrol.csv")
+
+df_control2 <- df_control %>%
+  group_by(date) %>%
+  summarize(average_price_ctrl = mean(Price))
+
+df_control2$date <- as.Date(df_control2$date)
+
+df_combined <- df_control2 %>% left_join(df_years, by="date")
+
+df_boxplot <- df_combined %>%
+  pivot_longer(
+    cols = c('average_price_ctrl', 'average_price_2014', 'average_price_2022'),     # Specify the columns to pivot
+    names_to = "group",                    # New column for group (control, 2014, 2022)
+    values_to = "value"                    # New column for values
+  )
+
+ggplot(df_boxplot, aes(group,value)) +
+  geom_boxplot()
+```
 
 ![](README_files/figure-commonmark/unnamed-chunk-5-1.png)
 
@@ -328,31 +354,14 @@ treatment variable and combine it into one dataframe.
 ## Preliminary Graph
 
 ``` r
-by_opening <- df3 %>%
-  group_by(open_2014,open_2022,date) %>%
-  summarize(average_price = mean(Price))
-```
-
-    `summarise()` has grouped output by 'open_2014', 'open_2022'. You can override
-    using the `.groups` argument.
-
-``` r
-df_control <- read.csv("dfsilvercontrol.csv")
-
-df_control2 <- df_control %>%
-  group_by(date) %>%
-  summarize(average_price_ctrl = mean(Price))
-
-df_control2$date <- as.Date(df_control2$date)
-
-df_combined <- by_opening %>% left_join(df_control2, by="date")
 ggplot()+
-  geom_line(data=df_combined, aes(x=date,y=average_price,col="Silver Line")) +
+  geom_line(data=df_combined, aes(x=date,y=average_price_2014,col="Expansion Phase 1")) +
+  geom_line(data=df_combined, aes(x=date,y=average_price_2022,col="Expansion Phase 2")) +
   geom_line(data=df_combined, aes(x=date,y=average_price_ctrl,col="Control Group")) +
   geom_vline(xintercept = as.numeric(as.Date("2014-07-01")), color="black",linetype="dashed") +
   geom_vline(xintercept = as.numeric(as.Date("2022-11-01")), color="black",linetype="dashed") +
-  scale_color_manual("Legend", values=c("red", "blue")) +
-  labs(title = "ZHVI Values of Virginia Zip Codes Near the Silver Line", x = "Date", y = "Price")
+  scale_color_manual("Legend", values=c("red", "blue","purple")) +
+  labs(title = "ZHVI Values of Virginia Zip Codes Near the Silver Line Expansion", x = "Date", y = "Price")
 ```
 
 ![](README_files/figure-commonmark/unnamed-chunk-8-1.png)
