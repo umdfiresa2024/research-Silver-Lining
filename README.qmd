@@ -11,7 +11,7 @@ Raphael Coronel, Taylor Woods, Brian Huang, Joseph Tang
 
 ## Research Question
 
-***How does the opening/announcement of the Silver Line affect housing costs?***
+***How did the opening/announcement of the Silver Line affect housing costs?***
 
 ## Background
 
@@ -168,18 +168,6 @@ When the second part of the rail opened, the house prices decreased by 59862.
 
 Look at impact of bedroom counts, as well as other potential variables like mortgage rates to further minimize the confounding variables.
 
-Step 9: Change the document format to gfm
-
-Step 10: Save this document as README.qmd
-
-Step 11: Render the document. README.md file should be created after this process.
-
-Step 12: Push the document back to GitHub and observe your beautiful document in your repository!
-
-Step 13: If your team has a complete dataframe that includes both the treated and outcome variable, you are done with the assignment. If not, make a research plan in Notion to collect data on the outcome and treatment variable and combine it into one dataframe.
-
-Step 13: If your team has a complete dataframe that includes both the treated and outcome variable, you are done with the assignment. If not, make a research plan in Notion to collect data on the outcome and treatment variable and combine it into one dataframe.
-
 ## Preliminary Graph
 
 ```{r}
@@ -187,8 +175,8 @@ ggplot()+
   geom_line(data=df_combined, aes(x=date,y=average_price_2014,col="Expansion Phase 1")) +
   geom_line(data=df_combined, aes(x=date,y=average_price_2022,col="Expansion Phase 2")) +
   geom_line(data=df_combined, aes(x=date,y=average_price_ctrl,col="Control Group")) +
-  geom_vline(xintercept = as.numeric(as.Date("2014-07-01")), color="black",linetype="dashed") +
-  geom_vline(xintercept = as.numeric(as.Date("2022-11-01")), color="black",linetype="dashed") +
+  geom_vline(xintercept = as.numeric(as.Date("2014-07-01")), color="blue",linetype="dashed") +
+  geom_vline(xintercept = as.numeric(as.Date("2022-11-01")), color="purple",linetype="dashed") +
   scale_color_manual("Legend", values=c("red", "blue","purple")) +
   labs(title = "ZHVI Values of Virginia Zip Codes Near the Silver Line Expansion", x = "Date", y = "Price")
 ```
