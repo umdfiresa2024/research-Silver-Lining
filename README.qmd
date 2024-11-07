@@ -26,6 +26,8 @@ Our data source is the ZHVI (Zillow Home Value Index) which collects the house p
 Clean data here.
 
 ```{r}
+#| warnings: false
+#| message: false
 library("tidyverse")
 library("glue")
 
@@ -54,22 +56,16 @@ Answer: once a month
 
 Answer: zip code
 
-Step 6. Use the **names** function to display all the variables (column) in the dataframe.
-
 ```{r}
 names(df3)
 
 ```
 
-## Question 3: Which column represents the treatment variable of interest?
+Treatment variable: station_open
 
-Answer: station_open
+Outcome variable: Price
 
-## Question 4: Which column represents the outcome variable of interest?
-
-Answer: Price
-
-Step 7: Create a boxplot to visualize the distribution of the outcome variable under treatment and no treatment.
+The box plot below illustrates the price distributions across our two treated and one untreated groups.
 
 ```{r}
 
@@ -105,8 +101,6 @@ df_boxplot <- df_combined %>%
 ggplot(df_boxplot, aes(group,value)) +
   geom_boxplot()
 ```
-
-Step 8: Fit a regression model $y=\beta_0 + \beta_1 x + \epsilon$ where $y$ is the outcome variable and $x$ is the treatment variable. Use the **summary** function to display the results.
 
 ```{r}
 model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022), data=df3)

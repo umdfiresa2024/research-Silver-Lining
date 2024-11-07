@@ -72,20 +72,6 @@ Clean data here.
 
 ``` r
 library("tidyverse")
-```
-
-    ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ✔ ggplot2   3.5.0     ✔ tibble    3.2.1
-    ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-    ✔ purrr     1.0.2     
-    ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ✖ dplyr::filter() masks stats::filter()
-    ✖ dplyr::lag()    masks stats::lag()
-    ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-
-``` r
 library("glue")
 
 df <- read.csv("dfdmv_with_treatment_NEW.csv")
@@ -111,9 +97,6 @@ Answer: once a month
 
 Answer: zip code
 
-Step 6. Use the **names** function to display all the variables (column)
-in the dataframe.
-
 ``` r
 names(df3)
 ```
@@ -122,16 +105,12 @@ names(df3)
      [6] "CountyName"   "Price"        "Year"         "Month"        "date"        
     [11] "station_open" "zip_in_2014"  "zip_in_2022"  "open_2014"    "open_2022"   
 
-## Question 3: Which column represents the treatment variable of interest?
+Treatment variable: station_open
 
-Answer: station_open
+Outcome variable: Price
 
-## Question 4: Which column represents the outcome variable of interest?
-
-Answer: Price
-
-Step 7: Create a boxplot to visualize the distribution of the outcome
-variable under treatment and no treatment.
+The box plot below illustrates the price distributions across our two
+treated and one untreated groups.
 
 ``` r
 df_2014 <- df3 %>%
@@ -168,10 +147,6 @@ ggplot(df_boxplot, aes(group,value)) +
 ```
 
 ![](README_files/figure-commonmark/unnamed-chunk-5-1.png)
-
-Step 8: Fit a regression model $y=\beta_0 + \beta_1 x + \epsilon$ where
-$y$ is the outcome variable and $x$ is the treatment variable. Use the
-**summary** function to display the results.
 
 ``` r
 model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022), data=df3)
