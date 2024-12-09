@@ -318,6 +318,11 @@ ggplot()+
 ```
 
 ![](README_files/figure-commonmark/unnamed-chunk-8-1.png)
+## Discussion
+Based on the data collected and the models run, it can be concluded that house prices in Loudoun and Fairfax County were affected by the introduction of the Silver Line. Phase I seems to have caused an increase of around 40,000 dollars, while Phase II caused a decrease of around 60,000 dollars. The results of Phase I are generally in line with other price trends in other lines, such as the Atlanta Beltline (Girard, 2018). However, the decrease in Phase II contradicts the house price trends of the later stages of the pandemic era. There are a multitude of reasons for this. The most likely is that there are more variables in play that were not accounted for. Another potential cause is discrepancies in initial prices. Since the house prices were not uniform throughout the stations opened in Phase I and Phase II, the house price change could be biased one way or the other. For example, if a house in an area where Phase II opened was initially priced at 600,000 dollars and decreased by 60,000. That is a 10 percent increase. However, if a house in an area where Phase I opened was priced at 300,000, an increase or decrease of that magnitude would indicate a much larger percentage increase.
+
+## Future Plans
+In future studies, it was be beneficial to include changes in mortgage rates and crime rates and account for natural disaster occurrences. Additionally, we can measure percentage change instead of the raw numerical change in price.
 
 ## References
 
