@@ -335,3 +335,5 @@ Journal of Transport economics and Policy, 15-29.
 
 Girard, P. (2018). URBAN REDEVELOPMENT AND HOUSING VALUES: A CASE STUDY
 OF THE ATLANTA BELTLINE.
+
+Saif, Muhammad Atiullah & Maghrour Zefreh, Mohammad & Torok, Adam. (2018). Public Transport Accessibility: A Literature Review. Periodica Polytechnica Transportation Engineering. 3. 10.3311/PPtr.12072. 
