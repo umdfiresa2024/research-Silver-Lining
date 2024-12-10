@@ -1,5 +1,5 @@
 ---
-title: "How does the opening of the Silver Line affect housing costs?"
+title: "How did the opening of the Silver Line affect housing costs?"
 author: "2024 FIRE198 Sustainability Analytics"
 format: gfm
 editor: visual
@@ -13,17 +13,41 @@ Raphael Coronel, Taylor Woods, Brian Huang, Joseph Tang
 
 ***How did the opening/announcement of the Silver Line affect housing costs?***
 
-## Background
+## Introduction
 
-This research project aims to address one question: How has the expansion of public transportation, such as the Silver Line, affected housing prices in the Washington D.C Metropolitan Area? The Silver Line has two significant expansions in Fairfax and Loudoun County that are broken up into 2 phases. The first phase is 2014-2022, where the metro line connects McLean, VA to Reston, VA. The second phase is 2022 to the present, where the metro line continues towards Ashburn, VA. Understanding the effect of the presence of public transportation, like metro lines, especially the Silver Line, on the prices of homes can have a serious effect on the way public transportation is perceived by policy makers and homebuyers. Public transit plays a vital role in shaping urban development patterns, which influence accessibility and property values. As public transportation networks expand, they often improve connectivity, reducing commute times and increasing access to employment centers (Saif et al., 2019). This can lead to an increase in demand for housing in neighborhoods served by transit, potentially driving up housing prices. Alternatively, transit expansion can spur development in neglected areas, resulting in the displacement of current residents. This research question can be answered by comparing the difference in price between houses that are not in proximity to the Silver Line, houses that are within the proximity of phase 1 in 2014, and houses that are within the proximity of phase 2 in 2022. The results of these findings will help policymakers make more informed decisions about transit investments, urban planning and affordable housing initiatives. On top of that, it will help inform equitable development strategies to ensure transportation improvements benefit all residents and their community conditions.
+This research project aims to address one question: How has the expansion of public transportation, such as the Silver Line, affected housing prices in the Washington D.C Metropolitan Area? The Silver Line has two significant expansions in Fairfax and Loudoun County that are broken up into 2 phases. The first phase is 2014-2022, where the metro line connects McLean, VA to Reston, VA. The second phase is 2022 to the present, where the metro line continues towards Ashburn, VA. Understanding the effect of the presence of public transportation, like metro lines, especially the Silver Line, on the prices of homes can have a serious effect on the way public transportation is perceived by policy makers and homebuyers. Public transit plays a vital role in shaping urban development patterns, which influence accessibility and property values. As public transportation networks expand, they often improve connectivity, reducing commute times and increasing access to employment centers (Saif et al., 2019). This can lead to an increase in demand for housing in neighborhoods served by transit, potentially driving up housing prices. Alternatively, transit expansion can spur development in neglected areas, resulting in the displacement of current residents. This research question can be answered by comparing the difference in price between houses that are not in proximity to the Silver Line, houses that are within the proximity of phase 1 in July 2014, and houses that are within the proximity of phase 2 in November 2022. The results of these findings will help policymakers make more informed decisions about transit investments, urban planning and affordable housing initiatives. On top of that, it will help inform equitable development strategies to ensure transportation improvements benefit all residents and their community conditions.
+
+## Existing Research
 
 We know the Silver Line has developed in two phases thus affecting the people’s usage of it who live in the area. Additionally, we have information about how house prices change throughout the course of months and years based on the location they are in. Housing prices have fluctuated based on the implementation of public transport, but we have a gap in information for the Washington D.C Metropolitan area. We know from past research that houses tend to increase in price based on their “closeness” to the station (Forrest et al., 1996). This is also proven by the Atlanta Beltline where the outcome was that homes increased in value by 30-40 percent if they were within a mile of the BeltLine (Girard, 2018). By looking at the two phases of the Silver Line, we can examine how the surrounding houses have fluctuated in price. This will help us get an understanding of how our area has adjusted due to more opportunity to use these services and how implementation in the future can change the housing market. Furthermore, we can observe how the distance from the Silver Line in our area is a factor in home costs by looking at how other forms of public transport have affected their nearby areas and apply our datasets and research to look at the effects in the Washington D.C Metropolitan area.
 
-## Data
+## Data Description
 
-Our data source is the ZHVI (Zillow Home Value Index) which collects the house price of different areas.
+### Outcome variable:
 
-Clean data here.
+-   Our outcome variable is the ZHVI (Zillow Home Value Index) for zip codes near the Silver Line which we renamed to "Price". This measures the typical home value in US dollars for a specified region.
+
+### Treatment variable:
+
+-   The treatment variables are if a zip code is within 5 kilometers of a Silver Line station and if so, during which phase was that station opened (open_2014, open_2022).
+
+### Frequency/Geographic unit:
+
+-   **Frequency**: This dataset is monthly, with nationwide observations ranging from January 2000 until July 2024. The ZHVI dataset can be found at <https://www.zillow.com/research/data/>
+
+-   **Geographic unit:** This data is organized by zip code.
+
+### Treated and Untreated Groups:
+
+-   **Treated Group**: Zip codes within 5 kilometers of a Silver Line station, separated by if they are near stations opened in 2014 (red) or 2022 (orange).
+
+-   **Untreated Group**: Zip codes within the same counties of Silver Line stations (Loudoun and Fairfax, VA) but not within 5 kilometers of a Silver Line station
+
+![](images/silver_phases.png)
+
+## Data Cleaning & Analysis
+
+Step 1: Show the initial data frame
 
 ```{r}
 #| warnings: false
@@ -36,39 +60,25 @@ df <- read.csv("dfdmv_with_treatment_NEW.csv")
 ```
 
 ```{r}
+head(df)
+```
+
+Step 2: Filter out any zip codes not in Loudoun or Fairfax Counties and add columns for if the stations' opening dates have passed
+
+```{r}
 df2 <- df %>% filter( df$CountyName == "Loudoun County" | df$CountyName == "Fairfax County")
 ```
 
 ```{r}
-df3<- df2 %>% mutate(date=as.Date(date)) %>% 
+df3 <- df2 %>% mutate(date=as.Date(date)) %>% 
   mutate(open_2014=ifelse(date>as.Date("2014-07-01"),1,0))%>%
   mutate(open_2022=ifelse(date>as.Date("2022-11-01"),1,0))
 
 ```
 
-## Preliminary Results
-
-## Question 1: What is the frequency of this data frame?
-
-Answer: once a month
-
-## Question 2: What is the cross-sectional (geographical) unit of this data frame?
-
-Answer: zip code
+Step 3: Create separate dataframes for each opening phase then take the average monthly price for each phase
 
 ```{r}
-names(df3)
-
-```
-
-Treatment variable: station_open
-
-Outcome variable: Price
-
-The box plot below illustrates the price distributions across our two treated and one untreated groups.
-
-```{r}
-
 df_2014 <- df3 %>%
   filter(zip_in_2014==1) %>%
   group_by(date) %>%
@@ -80,7 +90,11 @@ df_2022 <- df3 %>%
   summarize(average_price_2022 = mean(Price))
 
 df_years <- df_2014 %>% left_join(df_2022, by="date")
+```
 
+Step 4: Create a dataframe for the untreated group and take the average monthly price. Join all three dataframes together.
+
+```{r}
 df_control <- read.csv("dfsilvercontrol.csv")
 
 df_control2 <- df_control %>%
@@ -90,85 +104,9 @@ df_control2 <- df_control %>%
 df_control2$date <- as.Date(df_control2$date)
 
 df_combined <- df_control2 %>% left_join(df_years, by="date")
-
-df_boxplot <- df_combined %>%
-  pivot_longer(
-    cols = c('average_price_ctrl', 'average_price_2014', 'average_price_2022'),     # Specify the columns to pivot
-    names_to = "group",                    # New column for group (control, 2014, 2022)
-    values_to = "value"                    # New column for values
-  )
-
-ggplot(df_boxplot, aes(group,value)) +
-  geom_boxplot()
 ```
 
-```{r}
-model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022), data=df3)
-
-summary(model1)
-```
-
-## Question 5: What is the predicted value of the outcome variable when treatment=0?
-
-Answer: 559209
-
-## Question 6: What is predicted value of the outcome variable when treatment=1?
-
-Answer:
-
-2014:
-
-559209+46069+110466+59012=774756
-
-2022:
-
-559209+(-198980)+186716+(-60827)=486118
-
-## Question 7: What is the equation that describes the linear regression above? Please include an explanation of the variables and subscripts.
-
-Answer:
-
-$$
-Price_{it} = \beta_0 \times (\text{zip_in_2014}\times \text{open_2014})+ \beta_1 \times \text{zip_in_2014}_i + \beta_3 \times \text{open_2014}_t + \\ \gamma_1 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_2 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_3 (\text{zip_in_2022}_i \times \text{open_2022}_t) +\epsilon_{it}
-$$
-
-## Question 8: What fixed effects can be included in the regression? What does each fixed effects control for? Please include a new equation that incorporates the fixed effects.
-
-Answer: Month, Year, CountyName, BedroomCnt, RegionName (zip code)
-
-## Question 9: What is the impact of the treatment effect once fixed effects are included?
-
-Answer:
-
-```{r}
-model2<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022)+ as.factor(Month) + as.factor(Year) + as.factor(CountyName) + as.factor(BedroomCnt),data=df3)
-summary(model2)
-
-```
-
-# Questions for Week 5
-
-## Question 10: In a difference-in-differences (DiD) model, what is the treatment GROUP?
-
-Answer: zip_in_2014, zip_in_2022
-
-## Question 11: In a DiD model, what are the control groups?
-
-Answer: other houses in Fairfax and Loudoun county.
-
-## Question 12: What is the DiD regression equation that will answer your research question?
-
-## Question 13: Run your DiD regressions below. What are the results of the DiD regression?
-
-When the first part of the rail opened, the house prices increased by 7008.
-
-When the second part of the rail opened, the house prices decreased by 59862.
-
-## Question 14: What are the next steps of your research?
-
-Look at impact of bedroom counts, as well as other potential variables like mortgage rates to further minimize the confounding variables.
-
-## Preliminary Graph
+Step 5: Create a plot to visualize the outcome variable under no treatment and with treatment
 
 ```{r}
 ggplot()+
@@ -181,6 +119,84 @@ ggplot()+
   labs(title = "ZHVI Values of Virginia Zip Codes Near the Silver Line Expansion", x = "Date", y = "Price")
 ```
 
+## Preliminary Regression Results
+
+```{r}
+model1<-lm(Price ~ (zip_in_2014*open_2014)+(zip_in_2022*open_2022), data=df3)
+
+summary(model1)
+```
+
+## Question 1: What is the predicted value of the outcome variable when treatment=0?
+
+Answer: 559209
+
+## Question 2: What is predicted value of the outcome variable when treatment=1?
+
+Answer:
+
+zip_in_2014 & open_2014 (a zip code is near a station that opened in 2014 and it is past July 2014):
+
+559209 + 46069 + 110466 + 59012 = **774756**
+
+zip_in_2022 & open_2022 (a zip code is near a station that opened in 2022 and it is past November 2022):
+
+559209 + (-198980) + 186716 + (-60827) = **486118**
+
+## Question 3: What is the equation that describes the linear regression above? Please include an explanation of the variables and subscripts.
+
+$$
+Price_{it} = \beta_0(\text{zip_in_2014}\times \text{open_2014})+ \beta_1 \times \text{zip_in_2014}_i + \beta_2 \times \text{open_2014}_t + \\ \gamma_0 (\text{zip_in_2022}_i \times \text{open_2022}_t)+\gamma_1 \times \text{zip_in_2022}_i + \gamma_2 \times \text{open_2022}_t +\epsilon_{it}
+$$
+
+Price is the expected ZHVI value and its subscripts $$i$$ & $$t$$ represent a specific zip code and a specific point in time, respectively.
+
+zip_in_2014 and zip_in_2022 are if a zip code is within 5 km of a Silver Line station that opened in Phase 1 or 2.
+
+open_2014 and open_2022 are if the time is past the respective opening dates in 2014 or 2022.
+
+$$\beta$$ and $$\gamma$$ are unknown coefficients for Phase 1 and Phase 2 zip code prices.
+
+$$\epsilon$$ is the remaining noise or confounding factors.
+
+## Question 4: What is the impact of the treatment effect once fixed effects (like house bedroom count) are included?
+
+```{r}
+model3<-lm(Price ~ as.factor(BedroomCnt)*(zip_in_2014*open_2014),data=df3)
+summary(model3)
+```
+
+```{r}
+model4<-lm(Price ~ as.factor(BedroomCnt)*(zip_in_2022*open_2022),data=df3)
+summary(model4)
+```
+
+```{r}
+df4 <- df3 %>%
+  mutate(zip_control = if_else(zip_in_2014 == 0 & zip_in_2022 == 0, 1, 0))
+model5<-lm(Price ~ as.factor(BedroomCnt)*(zip_control),data=df4)
+summary(model5)
+```
+
+| Bedroom Count                    | Phase 1 ZHVI | Phase 2 ZHVI | Control ZHVI |
+|----------------------------------|--------------|--------------|--------------|
+| None - bedroom not accounted for | 774,756      | 486,118      | 559,209      |
+| 1 Bedroom                        | 232,692      | 279,880      | 222,779      |
+| 2 Bedroom                        | 405,414      | 428,275      | 321,467      |
+| 3 Bedroom                        | 598,858      | 637,757      | 493,602      |
+| 4 Bedroom                        | 853,300      | 786,807      | 635,906      |
+| 5 Bedroom                        | 1,141,108    | 972,036      | 945,945      |
+
+Table was calculated by adding together only relevant and statistically significant values (with at least one \* character to their right, meaning p-value \<= 0.05).
+
+## Discussion
+
+Based on the data collected and the models run, it can be concluded that house prices in Loudoun and Fairfax County were affected by the introduction of the Silver Line. When not accounting for bedroom counts, Phase I seems to have caused an increase of around 40,000 dollars, while Phase II caused a decrease of around 60,000 dollars. However, when accounting for bedrooms, both phases saw significant increases in prices across all bedroom counts. The results of Phase I are generally in line with other price trends near other transit lines, such as the Atlanta Beltline (Girard, 2018). However, the average decrease in Phase II contradicts the house price trends of the later stages of the pandemic era. There are a multitude of reasons for this. The most likely is that there are more variables in play that were not accounted for. Another potential cause is discrepancies in initial prices. Since the house prices were not uniform throughout the stations opened in Phase I and Phase II, the house price change could be biased one way or the other. For example, if a house in an area where Phase II opened was initially priced at 600,000 dollars and decreased by 60,000. That is a 10 percent increase. However, if a house in an area where Phase I opened was priced at 300,000, an increase or decrease of that magnitude would indicate a much larger percentage increase.
+
+## Next Steps
+
+In future studies, it was be beneficial to include changes in mortgage rates and crime rates and account for natural disaster occurrences. Additionally, we can measure percentage change instead of the raw numerical change in price.
+
 ## References
 
 Zillow Home Value Index. \[Dataset\]. Zillow Inc. https://www.zillow.com/research/data/
@@ -188,3 +204,5 @@ Zillow Home Value Index. \[Dataset\]. Zillow Inc. https://www.zillow.com/researc
 Forrest, D., Glen, J., & Ward, R. (1996). The impact of a light rail system on the structure of house prices: a hedonic longitudinal study. Journal of Transport economics and Policy, 15-29.
 
 Girard, P. (2018). URBAN REDEVELOPMENT AND HOUSING VALUES: A CASE STUDY OF THE ATLANTA BELTLINE.
+
+Saif, M. A., Zefreh, M. M., & Torok, A. (2019). Public transport accessibility: A literature review. *Periodica Polytechnica Transportation Engineering*, *47*(1), 36-43.
