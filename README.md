@@ -74,7 +74,8 @@ in the Washington D.C Metropolitan area.
 
 - The treatment variables are if a zip code is within 5 kilometers of a
   Silver Line station and if so, during which phase was that station
-  opened (open_2014, open_2022).
+  opened (zip_in_2014, zip_in_2022) and if the station has opened yet at
+  the specified month.
 
 ### Frequency/Geographic unit:
 
